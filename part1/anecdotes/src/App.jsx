@@ -1,7 +1,8 @@
 import { useState } from 'react'
 
 const App = () => {
-  const [votes, setVotes] = useState({0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0})
+  // const [votes, setVotes] = useState({0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0})
+  const [votes, setVotes] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0])
   const anecdotes = [
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
@@ -12,15 +13,26 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
-   
+     
+  // const max = Math.max(...votes);
+  // let index;
+  // for(let i = 0; i<votes.length; i++){
+  //   if(votes[i]===max){
+  //     index = i;
+  //   }
+  // }
+      
+   const index = votes.indexOf(Math.max(...votes));
   const [selected, setSelected] = useState(0)
 
   const handleRandom=()=>{
-    let rand = Math.floor(Math.random()*8);
+    let rand = Math.floor(Math.random()*anecdotes.length);
     setSelected(rand)
   }
   const handleVotes=(selected)=>{
-    let newVote = {...votes, [selected]: votes[selected]+1 }
+    // let newVote = {...votes, [selected]: votes[selected]+1 }
+    let newVote = [...votes]
+    newVote[selected]+=1;
     setVotes(newVote);
   }
 
@@ -29,7 +41,11 @@ const App = () => {
       {anecdotes[selected]}
       <button onClick={handleRandom}>next anecdotes</button>
       <button onClick={()=>handleVotes(selected)}>vote</button>
+      {/* <p>has {votes[selected]} vote</p> */}
       <p>has {votes[selected]} votes</p>
+      <h1>Anecdote with most votes</h1>
+      {anecdotes[index]}
+   
       {/* In object if the argument is variable, always use [] and dot only if you are passing that as value */}
     </div>
   )
