@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 const App = () => {
+  const [votes, setVotes] = useState({0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0})
   const anecdotes = [
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
@@ -13,15 +14,23 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
-  // setSelected()
+
   const handleRandom=()=>{
-    let rand = Math.floor(Math.random()*6);
+    let rand = Math.floor(Math.random()*8);
     setSelected(rand)
   }
+  const handleVotes=(selected)=>{
+    let newVote = {...votes, [selected]: votes[selected]+1 }
+    setVotes(newVote);
+  }
+
   return (
     <div>
-      <button onClick={handleRandom}>next anecdotes</button>
       {anecdotes[selected]}
+      <button onClick={handleRandom}>next anecdotes</button>
+      <button onClick={()=>handleVotes(selected)}>vote</button>
+      <p>has {votes[selected]} votes</p>
+      {/* In object if the argument is variable, always use [] and dot only if you are passing that as value */}
     </div>
   )
 }
