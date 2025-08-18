@@ -22,7 +22,7 @@ const App = () => {
   //   }
   // }
       
-   const index = votes.indexOf(Math.max(...votes));
+  const index = votes.indexOf(Math.max(...votes));
   const [selected, setSelected] = useState(0)
 
   const handleRandom=()=>{
