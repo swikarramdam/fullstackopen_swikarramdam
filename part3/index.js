@@ -6,6 +6,8 @@ morgan.token("body", (req, res) => JSON.stringify(req.body));
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
+const cors = require("cors");
+app.use(cors());
 let persons = [
   { id: "1", name: "Arto Hellas", number: "040-123456" },
   { id: "2", name: "Ada Lovelace", number: "39-44-5323523" },
