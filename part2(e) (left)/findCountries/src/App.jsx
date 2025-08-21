@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 
+const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+console.log(apiKey);
 function App() {
   const [countries, setCountries] = useState([]);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState("");
+  const [weatherData, setWeatherData] = useState("");
   useEffect(() => {
     const fetchData = () => {
       const result = fetch(
@@ -15,9 +18,23 @@ function App() {
         })
         .then((data) => {
           setCountries(data);
-          // console.log(data);
         })
         .catch((error) => console.log(error));
+    };
+    const fetchWeather = () => {
+      const weather = fetch(
+        "https://api.openweathermap.org/data/2.5/weather?q={country.capital}&appid={apiKey}"
+      )
+        .then((response) => {
+          if (!response.ok) throw new Error("Network response was not ok");
+          return response.json();
+        })
+        .then((data) => {
+          setWeatherData(weather);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     };
     fetchData();
   }, []);
@@ -39,6 +56,8 @@ function App() {
           );
         })}
         <img src={country.flags.png} alt={`Flag of ${country.name.common}`} />
+        <h2>Weather in {country.capital}</h2>
+        <p>Temperature {weatherData.main.temp - 273.15} celsius</p>
       </>
     );
   };
