@@ -26,48 +26,67 @@ const Form = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (persons.some((person) => person.name === newName)) {
-            showMessage(
-              `${newName} is already added to phonebook, do you want to replace the number?`,
-              "error"
-            );
-            const find = persons.find((person) => person.name === newName);
-            return personService
-              .update({ ...find, number: newNumber }, find.id)
-              .then((updatedPerson) => {
-                setPersons(
-                  persons.map((p) =>
-                    p.id === updatedPerson.id ? updatedPerson : p
-                  )
-                );
-                setNewName("");
-                setNewNumber("");
-                showMessage(`${newName}'s number updated successfully`);
-              })
-              .catch((error) => {
-                showMessage(
-                  `${newName}'s has already been removed from the server`,
-                  "error"
-                );
-                setPersons(persons.filter((p) => p.id !== find.id));
-              });
-          }
 
+          // Check if number already exists
           if (persons.some((person) => person.number === newNumber)) {
             showMessage(`${newNumber} is already added to phonebook`, "error");
             return;
           }
-          const obj = {
-            name: newName,
-            number: newNumber,
-          };
 
+          const existingPerson = persons.find(
+            (person) => person.name === newName
+          );
+
+          if (existingPerson) {
+            // Update existing person's number
+            personService
+              .update(
+                { ...existingPerson, number: newNumber },
+                existingPerson._id
+              )
+              .then((updatedPerson) => {
+                setPersons(
+                  persons.map((p) =>
+                    p.id === updatedPerson._id ? updatedPerson : p
+                  )
+                );
+                showMessage(
+                  `${newName}'s number updated successfully`,
+                  "success"
+                );
+                setNewName("");
+                setNewNumber("");
+              })
+              .catch((error) => {
+                const errMsg = error.response?.data?.error || "Update failed";
+                showMessage(`${newName}'s update failed: ${errMsg}`, "error");
+                if (
+                  errMsg.includes("removed") ||
+                  errMsg.includes("CastError")
+                ) {
+                  setPersons(
+                    persons.filter((p) => p._id !== existingPerson._id)
+                  );
+                }
+              });
+
+            return; // stop further execution
+          }
+
+          // Add new person
+          const newPerson = { name: newName, number: newNumber };
           personService
-            .create(obj)
-            .then((data) => setPersons(persons.concat(data)));
-          showMessage(`Added ${obj.name} successfully`, "success");
-          setNewName("");
-          setNewNumber("");
+            .create(newPerson)
+            .then((data) => {
+              setPersons(persons.concat(data));
+              showMessage(`Added ${data.name} successfully`, "success");
+              setNewName("");
+              setNewNumber("");
+            })
+            .catch((error) => {
+              const errMsg = error.response?.data?.error || "Adding failed";
+              showMessage(errMsg, "error");
+            });
         }}
       >
         <div>

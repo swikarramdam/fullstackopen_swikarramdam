@@ -3,8 +3,8 @@ import React from "react";
 import personService from "/src/Services/service.js";
 
 const Display = ({ filtered, persons, setPersons }) => {
-  const handleDelete = (id) => {
-    personService.remover(id).then(() => {
+  const handleDelete = (_id) => {
+    personService.remover(_id).then(() => {
       // setPersons(persons.filter((person) => person.id !== id));
       personService.getAll().then((data) => setPersons(data));
     });
@@ -19,7 +19,7 @@ const Display = ({ filtered, persons, setPersons }) => {
               {person.number}
               <button
                 onClick={() => {
-                  handleDelete(person.id);
+                  handleDelete(person._id);
                 }}
               >
                 Delete
