@@ -4,8 +4,9 @@ app.use(express.json());
 var morgan = require("morgan");
 const mongoose = require("mongoose");
 const Person = require("./models/person");
+require("dotenv").config();
 
-const password = process.argv[2];
+const password = process.env.MONGO_PASSWORD;
 const uri = `mongodb+srv://swikar:${password}@cluster0.dkor4to.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=Cluster0`;
 
 mongoose
