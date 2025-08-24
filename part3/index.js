@@ -81,12 +81,12 @@ app.post("/api/persons", (req, res, next) => {
   //   });
   // }
   const person = new Person({ name, number });
-  person.save().then((savedPerson) => {
-    res
-      .status(201)
-      .json(savedPerson)
-      .catch((err) => next(err));
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      res.status(201).json(savedPerson);
+    })
+    .catch((err) => next(err));
 });
 
 app.delete("/api/persons/:id", (req, res, next) => {
