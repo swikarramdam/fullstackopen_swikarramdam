@@ -3,13 +3,15 @@ import Filter from "./Components/Filter";
 import Form from "./Components/Form";
 import Display from "./Components/Display";
 import personService from "./Services/service";
+import Notification from "./Components/Notification";
 
 const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [persons, setPersons] = useState([]);
-  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
 
   useEffect(function () {
     personService.getAll().then((data) => {
@@ -17,12 +19,13 @@ const App = () => {
     });
   }, []);
 
-  const filtered = persons.filter(
-    (person) => person.name?.toLowerCase().includes(searchTerm.toLowerCase()) //just adding question mark fixed it
+  const filtered = persons.filter((person) =>
+    person.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} messageType={messageType} />
       <Filter searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <h2>Add a new</h2>
       <Form
@@ -32,6 +35,8 @@ const App = () => {
         newNumber={newNumber}
         setNewName={setNewName}
         setNewNumber={setNewNumber}
+        setMessage={setMessage}
+        setMessageType={setMessageType}
       />
       <h2>Numbers</h2>
 
