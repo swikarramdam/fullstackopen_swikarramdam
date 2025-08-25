@@ -18,7 +18,7 @@ const favoriteBlog = (blogs) => {
 };
 const mostBlogs = (blogs) => {
   //   const blogsByAuthor = _.groupBy(blogs, "author");
-  const blogCount = _.countBy(blogs, "author");
+  const blogCount = _.countBy(blogs, "author"); //gives author lists with their respective blogs
   //_.map(obj, (value,key))
   const authorCounts = _.map(blogCount, (count, author) => ({
     author: author,
@@ -26,11 +26,18 @@ const mostBlogs = (blogs) => {
   }));
   return _.maxBy(authorCounts, "blogs");
 };
-//   let result = blogCount.reduce(
-//     (prev, curr) => {
-//       return curr[1] > prev[1] ? curr : prev;
-//     },
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) return null;
 
-//   );
-//   return { Author: result[0], blogs: Number(result[1]) };
-module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
+  // group blogs by author
+  // const grouped = _.groupBy(blogs, "author");
+  const grouped = _.groupBy(blogs, "author");
+
+  const likesByAuthor = _.map(grouped, (authorCounts, author) => ({
+    author: author,
+    likes: _.sumBy(authorCounts, "likes"),
+  }));
+
+  return _.maxBy(likesByAuthor, "likes");
+};
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };
