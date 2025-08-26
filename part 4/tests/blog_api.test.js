@@ -75,7 +75,21 @@ describe("Post /api/blogs", () => {
     assert.ok(titles.includes("Swikar's new blog"));
   });
 });
-
+describe("POST /api/blogs without likes", () => {
+  test("default likes to 0 if missing", async () => {
+    const newBlog = {
+      title: "Swikar's new blog",
+      author: "Swikar",
+      url: "http://swikarramdam.com.np",
+    };
+    const res = await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+    assert.strictEqual(res.body.likes, 0);
+  });
+});
 after(async () => {
   await mongoose.connection.close();
 });
