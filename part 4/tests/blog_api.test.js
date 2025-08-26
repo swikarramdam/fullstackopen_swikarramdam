@@ -53,7 +53,31 @@ describe("GET /api/blogs returns blogs with id property", () => {
   });
 });
 
-// 3️⃣ Close DB connection after all tests
+describe("POST /api/blogs", () => {
+  test("a valid blog can be added", async () => {
+    const newBlog = {
+      title: "My New Blog",
+      author: "Swikar",
+      url: "http://example.com/new",
+      likes: 5,
+    };
+
+    // POST request
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201) // Created
+      .expect("Content-Type", /application\/json/);
+
+    // Check DB
+    const blogsAtEnd = await Blog.find({});
+    assert.strictEqual(blogsAtEnd.length, initialBlogs.length + 1);
+
+    const titles = blogsAtEnd.map((b) => b.title);
+    assert.ok(titles.includes("My New Blog"));
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
