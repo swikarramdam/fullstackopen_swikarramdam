@@ -53,28 +53,26 @@ describe("GET /api/blogs returns blogs with id property", () => {
   });
 });
 
-describe("POST /api/blogs", () => {
+describe("Post /api/blogs", () => {
   test("a valid blog can be added", async () => {
     const newBlog = {
-      title: "My New Blog",
+      title: "Swikar's new blog",
       author: "Swikar",
-      url: "http://example.com/new",
+      url: "http://swikarramdam.com.np",
       likes: 5,
     };
-
     // POST request
     await api
       .post("/api/blogs")
       .send(newBlog)
-      .expect(201) // Created
+      .expect(201)
       .expect("Content-Type", /application\/json/);
 
-    // Check DB
-    const blogsAtEnd = await Blog.find({});
-    assert.strictEqual(blogsAtEnd.length, initialBlogs.length + 1);
+    const Blogs = await Blog.find({});
+    assert.strictEqual(Blogs.length, initialBlogs.length + 1);
 
-    const titles = blogsAtEnd.map((b) => b.title);
-    assert.ok(titles.includes("My New Blog"));
+    const titles = Blogs.map((b) => b.title);
+    assert.ok(titles.includes("Swikar's new blog"));
   });
 });
 
