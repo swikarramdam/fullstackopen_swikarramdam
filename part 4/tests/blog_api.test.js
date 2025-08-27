@@ -90,6 +90,24 @@ describe("POST /api/blogs without likes", () => {
     assert.strictEqual(res.body.likes, 0);
   });
 });
+
+describe("POST /api/blogs validation", () => {
+  test("Fails with 400 if title is missing", async () => {
+    const newBlog = {
+      author: "Hero",
+      url: "hero.url.com",
+    };
+    await api.post("/api/blogs").send(newBlog).expect(400);
+  });
+  test("Fails with 400 if url is missing", async () => {
+    const newBlog = {
+      title: "Title",
+      author: "Author",
+    };
+    await api.post("/api/blogs").send(newBlog).expect(400);
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
