@@ -21,12 +21,12 @@ sequenceDiagram
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
     activate server
-    server-->>browser: [{ "content": "something", "date": "some_date" }, ... ]
+    server-->>browser: [{ "content": "test", "date": "2025-07-26T19:52:00.455Z}, ... ]
     deactivate server
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
 
-    Note right of browser:content: "check2", date: "2025-07-27T06:29:09.533Z"
+    Note right of browser:content:"check2", date: "2025-07-27T06:29:09.533Z"
     activate server
 
     server-->>browser: Responses status code 201 (created)
