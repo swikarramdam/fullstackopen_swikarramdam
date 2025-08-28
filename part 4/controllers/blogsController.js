@@ -7,8 +7,21 @@ const getAllBlogs = async (req, res) => {
 
 const createBlogs = async (req, res) => {
   try {
-    const blog = new Blog(req.body);
+    if (!req.user) {
+      return res.status(401).json({ error: "token missing or invalid" });
+    }
+    const blog = new Blog({
+      title: req.body.title,
+      author: req.body.author,
+      url: req.body.url,
+      likes: req.body.likes || 0,
+      user: req.user._id, // link to logged-in user
+    });
     const savedBlog = await blog.save();
+    req.user.blogs = req.user.blogs.concat(savedBlog._id);
+    await req.user.save();
+
+    // const blog = new Blog(req.body);
     res.status(201).json(savedBlog);
   } catch (error) {
     if (error.name === "ValidationError") {
