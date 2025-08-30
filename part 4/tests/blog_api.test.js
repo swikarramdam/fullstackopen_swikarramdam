@@ -4,9 +4,11 @@ const assert = require("node:assert");
 const supertest = require("supertest");
 const mongoose = require("mongoose");
 require("dotenv").config();
-
+const bcrypt = require("bcrypt");
 const app = require("../app");
 const Blog = require("../models/blog");
+const User = require("../models/user");
+let token;
 
 const api = supertest(app);
 
@@ -33,7 +35,24 @@ before(async () => {
 // 2️⃣ Seed DB before each test
 beforeEach(async () => {
   await Blog.deleteMany({});
-  await Blog.insertMany(initialBlogs);
+  await User.deleteMany({});
+
+  // create a test user
+  const passwordHash = await bcrypt.hash("secret", 10);
+  const user = new User({ username: "testuser", passwordHash });
+  await user.save();
+
+  // login test
+
+  const loginRes = await api.post("/api/login").send({
+    username: "testuser",
+    password: "secret",
+  });
+  token = loginRes.body.token;
+
+  // initial blogs with user field attached
+  const blogObjects = initialBlogs.map((b) => ({ ...b, user: user._id }));
+  await Blog.insertMany(blogObjects);
 });
 
 describe("GET /api/blogs returns blogs with id property", () => {
@@ -64,6 +83,7 @@ describe("Post /api/blogs", () => {
     // POST request
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -75,6 +95,17 @@ describe("Post /api/blogs", () => {
     assert.ok(titles.includes("Swikar's new blog"));
   });
 });
+
+describe("POST /api/blogs security", () => {
+  test("fails with 401 if unauthorised", async () => {
+    const testBlog = {
+      title: "Unauthorised blog",
+      author: "swhacker",
+      url: "swhacker.com",
+    };
+    await api.post("/api/blogs").send(testBlog).expect(401);
+  });
+});
 describe("POST /api/blogs without likes", () => {
   test("default likes to 0 if missing", async () => {
     const newBlog = {
@@ -84,6 +115,7 @@ describe("POST /api/blogs without likes", () => {
     };
     const res = await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -97,14 +129,59 @@ describe("POST /api/blogs validation", () => {
       author: "Hero",
       url: "hero.url.com",
     };
-    await api.post("/api/blogs").send(newBlog).expect(400);
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
   });
   test("Fails with 400 if url is missing", async () => {
     const newBlog = {
       title: "Title",
       author: "Author",
     };
-    await api.post("/api/blogs").send(newBlog).expect(400);
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
+  });
+});
+
+// delete test
+describe("DELETE /api/blogs", () => {
+  let deleteThisBlog;
+  beforeEach(async () => {
+    const newBlog = {
+      title: "Blog to delete",
+      author: "TestAuthor",
+      url: "http://delete.com",
+      likes: 0,
+    };
+    const res = await api
+      .post("/api/blogs/")
+      .set("Authorization", `Bearer ${token}`)
+      .send(newBlog)
+      .expect(201);
+    deleteThisBlog = res.body;
+  });
+
+  test("succeeds with 204 if authorised", async () => {
+    await api
+      .delete(`/api/blogs/${deleteThisBlog.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(204);
+
+    const blogsAfter = await Blog.find({});
+    const ids = blogsAfter.map((b) => b.id);
+    assert.ok(!ids.includes(deleteThisBlog.id), "blog was not deleted");
+  });
+  test("fails with 401 if unauthorised", async () => {
+    await api.delete(`/api/blogs/${deleteThisBlog.id}`).expect(401);
+
+    const blogsAfter = await Blog.find({});
+    const ids = blogsAfter.map((b) => b.id);
+    assert.ok(ids.includes(deleteThisBlog.id), "blog should not be deleted");
   });
 });
 
