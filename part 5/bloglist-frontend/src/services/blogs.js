@@ -12,11 +12,26 @@ const getAll = async () => {
 const create = async ({ title, author, url }) => {
   const response = await axios.post(
     // syntax = axios.post(url, data, config)
-    "/api/blogs",
+    `${baseUrl}`,
     { title, author, url },
     { headers: { Authorization: token } }
   );
   return response.data;
 };
 
-export default { getAll, setToken, create };
+const update = async (id, updatedBlog) => {
+  const response = await axios.put(`${baseUrl}/${id}`, updatedBlog, {
+    headers: { Authorization: token },
+  });
+  return response.data;
+};
+
+const remove = async (id) => {
+  const response = await axios.delete(`${baseUrl}/${id}`, {
+    //axios.delete (url,config)
+    headers: { Authorization: token },
+  });
+  return response.data;
+};
+
+export default { getAll, setToken, create, update, remove };

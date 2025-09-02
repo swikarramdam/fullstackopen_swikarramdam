@@ -5,6 +5,9 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login"; // loginService = { login : async (credentials) {...}}
 import Notification from "./components/Notifications";
+import Togglable from "./components/Togglable";
+import BlogForm from "./components/BlogForm";
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
@@ -18,6 +21,7 @@ const App = () => {
     message: null,
     type: null,
   });
+  const [expandedBlogId, setExpandedBlogId] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -74,10 +78,10 @@ const App = () => {
       };
       const returnedBlog = await blogService.create(newBlog);
       setBlogs(blogs.concat(returnedBlog));
+      showNotifications(`Blog ${newTitle} added`);
       setNewTitle("");
       setNewUrl("");
       setNewAuthor("");
-      showNotifications(`Blog ${newTitle} added`);
     } catch (error) {
       console.log("error creating blog", error);
       showNotifications(`Failed to add blog`, "error");
@@ -113,53 +117,71 @@ const App = () => {
     );
   }
 
+  const handleLike = async (blog) => {
+    console.log("Blog before update:", blog);
+    try {
+      const updatedBlog = { ...blog, likes: blog.likes + 1 };
+      const returnedBlog = await blogService.update(blog.id, updatedBlog);
+      console.log("Returned from backend:", returnedBlog); // Step 2: see what we got back
+
+      setBlogs(blogs.map((b) => (b.id === blog.id ? returnedBlog : b)));
+      setExpandedBlogId(blog.id);
+    } catch (error) {
+      console.log("Error updating likes", error);
+      showNotifications("Failed to update likes", "error");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const blogToDelete = blogs.find((b) => b.id === id);
+    if (
+      !window.confirm(`Delete ${blogToDelete.title} by ${blogToDelete.author}`)
+    )
+      return;
+    try {
+      await blogService.remove(id);
+      setBlogs(blogs.filter((b) => b.id !== id));
+      showNotifications(`Deleted "${blogToDelete.title}"`);
+    } catch (error) {
+      console.log("Error deleting blog", error);
+      showNotifications("Failed to delete", "error");
+    }
+  };
+
   return (
     <div>
       <Notification message={notification.message} type={notification.type} />
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+
+      {blogs
+        .sort((a, b) => b.likes - a.likes) //works for arrays b-a (descending order), a-b (ascending order)
+        .map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            expanded={blog.id === expandedBlogId}
+            toggleExpanded={() =>
+              setExpandedBlogId(blog.id === expandedBlogId ? null : blog.id)
+            }
+            handleLike={handleLike}
+            handleDelete={handleDelete}
+            user={user}
+          />
+        ))}
+
       <p>
         logged in <button onClick={handleLogout}>logout</button>
       </p>
       <div>
         <h2>Create New Blog</h2>
-        <form onSubmit={addBlog}>
-          <div>
-            <label>title</label>
-
-            <input
-              type="text"
-              value={newTitle}
-              onChange={({ target }) => {
-                setNewTitle(target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label>url</label>
-
-            <input
-              type="text"
-              value={newUrl}
-              onChange={({ target }) => {
-                setNewUrl(target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label>author</label>
-
-            <input
-              type="text"
-              value={newAuthor}
-              onChange={({ target }) => {
-                setNewAuthor(target.value);
-              }}
-            />
-          </div>
-          <button type="submit">Create</button>
-        </form>
+        <BlogForm
+          addBlog={addBlog}
+          newTitle={newTitle}
+          setNewTitle={setNewTitle}
+          newAuthor={newAuthor}
+          setNewAuthor={setNewAuthor}
+          newUrl={newUrl}
+          setNewUrl={setNewUrl}
+        />
       </div>
     </div>
   );
