@@ -52,19 +52,36 @@ const updateBlog = async (req, res) => {
 };
 const deleteBlog = async (req, res) => {
   const { id } = req.params;
+  console.log("request user,", req.user);
   try {
     const blog = await Blog.findById(id);
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
     }
 
-    // Handle populated vs unpopulated blog.user
-    // const blogUserId = blog.user.id
-    //   ? blog.user.id.toString()
-    //   : blog.user.toString();
+    console.log("Found blog:", blog);
+    console.log("Blog user type:", typeof blog.user);
+    console.log("Blog user:", blog.user);
+    console.log("Req user type:", typeof req.user._id);
+    console.log("Req user:", req.user._id);
 
-    if (blogUserId !== req.user._id.toString()) {
-      return res.status(401).json({ error: "Unauthorised" });
+    // Ensure we're comparing strings
+    const blogUserId = blog.user._id
+      ? blog.user._id.toString()
+      : blog.user.toString();
+    const requestUserId = req.user._id.toString();
+
+    console.log("Comparing IDs:");
+    console.log("Blog user ID:", blogUserId);
+    console.log("Request user ID:", requestUserId);
+    console.log("Are IDs equal?", blogUserId === requestUserId);
+
+    if (blogUserId !== requestUserId) {
+      return res.status(401).json({
+        error: "Unauthorized",
+        blogUserId: blogUserId,
+        requestUserId: requestUserId,
+      });
     }
 
     await Blog.findByIdAndDelete(id);
