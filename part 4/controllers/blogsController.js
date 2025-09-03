@@ -57,17 +57,26 @@ const deleteBlog = async (req, res) => {
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
     }
-    if (!blog.user || blog.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ error: "Unauthorised" }); //401 = unauthorised
+
+    // Handle populated vs unpopulated blog.user
+    // const blogUserId = blog.user.id
+    //   ? blog.user.id.toString()
+    //   : blog.user.toString();
+
+    if (blogUserId !== req.user._id.toString()) {
+      return res.status(401).json({ error: "Unauthorised" });
     }
-    await Blog.findByIdAndDelete(id); //Blog B, mongoose model convention , blog b, an instance of new Blog
+
+    await Blog.findByIdAndDelete(id);
 
     req.user.blogs = req.user.blogs.filter((b) => b.toString() !== id);
     await req.user.save();
-
+    console.log("Blog user:", blog.user);
+    console.log("Req user:", req.user._id.toString());
     res.status(204).end();
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 module.exports = { getAllBlogs, createBlog, updateBlog, deleteBlog };
