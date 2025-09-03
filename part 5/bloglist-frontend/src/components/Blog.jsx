@@ -1,5 +1,4 @@
 //Components/blog.jsx
-
 const Blog = ({
   blog,
   handleLike,

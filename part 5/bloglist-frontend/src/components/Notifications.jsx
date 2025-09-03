@@ -1,3 +1,4 @@
+//Components/Notifications.jsx
 const Notification = ({ message, type }) => {
   if (!message) return null;
   const style = {

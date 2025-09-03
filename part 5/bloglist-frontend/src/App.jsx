@@ -1,5 +1,4 @@
 //App.js
-
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
@@ -42,14 +41,17 @@ const App = () => {
       setNotification({ message: null, type: null });
     }, 5000);
   };
+
   const handleLogin = async (event) => {
     event.preventDefault();
-    // console.log("logging in with", username, password);
+    console.log("logging in with", username, password);
     try {
       const user = await loginService.login({ username, password });
       setUser(user);
       window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
       blogService.setToken(user.token);
+      console.log(user.token);
+
       setUsername("");
       setPassword("");
       showNotifications(`Welcome ${username}`);
@@ -132,6 +134,7 @@ const App = () => {
   };
 
   const handleDelete = async (id) => {
+    console.log("handle delete starts");
     const blogToDelete = blogs.find((b) => b.id === id);
     if (
       !window.confirm(`Delete ${blogToDelete.title} by ${blogToDelete.author}`)
