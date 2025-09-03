@@ -1,5 +1,5 @@
 //Components/blog.jsx
-import { useState } from "react";
+
 const Blog = ({
   blog,
   handleLike,
