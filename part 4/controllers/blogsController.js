@@ -52,9 +52,9 @@ const updateBlog = async (req, res) => {
 };
 const deleteBlog = async (req, res) => {
   const { id } = req.params;
-  console.log("request user,", req.user);
+  console.log("Request user:", req.user);
   try {
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id).populate("user");
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
     }
@@ -85,13 +85,12 @@ const deleteBlog = async (req, res) => {
     }
 
     await Blog.findByIdAndDelete(id);
-
     req.user.blogs = req.user.blogs.filter((b) => b.toString() !== id);
     await req.user.save();
-    console.log("Blog user:", blog.user);
-    console.log("Req user:", req.user._id.toString());
+
     res.status(204).end();
   } catch (error) {
+    console.error("Delete error:", error);
     res.status(400).json({ error: error.message });
   }
 };
