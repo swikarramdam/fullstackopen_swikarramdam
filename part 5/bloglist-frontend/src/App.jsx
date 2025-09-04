@@ -1,8 +1,8 @@
-//App.js
+// App.jsx
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
-import loginService from "./services/login"; // loginService = { login : async (credentials) {...}}
+import loginService from "./services/login";
 import Notification from "./components/Notifications";
 import BlogForm from "./components/BlogForm";
 
@@ -11,7 +11,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  // const [errorMessage, setErrorMessage] = useState(null);
   const [newTitle, setNewTitle] = useState("");
   const [newAuthor, setNewAuthor] = useState("");
   const [newUrl, setNewUrl] = useState("");
@@ -21,48 +20,41 @@ const App = () => {
   });
   const [expandedBlogId, setExpandedBlogId] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      blogService.getAll().then((blogs) => setBlogs(blogs));
-    }
-  }, [user]);
-
+  // ✅ Restore user and fetch blogs once
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogUser");
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const savedUser = JSON.parse(loggedUserJSON);
+      setUser(savedUser);
+      blogService.setToken(savedUser.token);
+
+      blogService.getAll().then((blogs) => setBlogs(blogs));
     }
   }, []);
+
   const showNotifications = (message, type = "success") => {
     setNotification({ message, type });
-    setTimeout(() => {
-      setNotification({ message: null, type: null });
-    }, 5000);
+    setTimeout(() => setNotification({ message: null, type: null }), 5000);
   };
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    console.log("logging in with", username, password);
     try {
-      const user = await loginService.login({ username, password });
-      setUser(user);
-      window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      console.log(user.token);
-
+      const loggedUser = await loginService.login({ username, password });
+      setUser(loggedUser);
+      blogService.setToken(loggedUser.token);
+      window.localStorage.setItem("loggedBlogUser", JSON.stringify(loggedUser));
       setUsername("");
       setPassword("");
-      showNotifications(`Welcome ${username}`);
+      showNotifications(`Welcome ${loggedUser.username}`);
+      // Fetch blogs after login
+      const blogs = await blogService.getAll();
+      setBlogs(blogs);
     } catch {
-      // setErrorMessage("Wrong Credentials");
-      // setTimeout(() => {
-      //   setErrorMessage(null);
-      // }, 5000);
-      showNotifications(`Login Failed`, "error");
+      showNotifications("Login Failed", "error");
     }
   };
+
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogUser");
     setUser(null);
@@ -72,34 +64,59 @@ const App = () => {
   const addBlog = async (event) => {
     event.preventDefault();
     try {
-      const newBlog = {
-        title: newTitle,
-        url: newUrl,
-        author: newAuthor,
-      };
+      const newBlog = { title: newTitle, author: newAuthor, url: newUrl };
       const returnedBlog = await blogService.create(newBlog);
       setBlogs(blogs.concat(returnedBlog));
-      showNotifications(`Blog ${newTitle} added`);
+      showNotifications(`Blog "${newTitle}" added`);
       setNewTitle("");
-      setNewUrl("");
       setNewAuthor("");
+      setNewUrl("");
+    } catch {
+      showNotifications("Failed to add blog", "error");
+    }
+  };
+
+  const handleLike = async (blog) => {
+    try {
+      const updatedBlog = {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: blog.likes + 1, // only changing likes
+      };
+      const returnedBlog = await blogService.update(blog.id, updatedBlog);
+      setBlogs(blogs.map((b) => (b.id === blog.id ? returnedBlog : b)));
+      setExpandedBlogId(blog.id);
     } catch (error) {
-      console.log("error creating blog", error);
-      showNotifications(`Failed to add blog`, "error");
+      console.log("Error updating likes", error);
+      showNotifications("Failed to update likes", "error");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const blogToDelete = blogs.find((b) => b.id === id);
+    if (
+      !window.confirm(`Delete ${blogToDelete.title} by ${blogToDelete.author}?`)
+    )
+      return;
+
+    try {
+      await blogService.remove(id);
+      setBlogs(blogs.filter((b) => b.id !== id));
+      showNotifications(`Deleted "${blogToDelete.title}"`);
+    } catch {
+      showNotifications("Failed to delete", "error");
     }
   };
 
   if (!user) {
     return (
       <div>
-        <h2>blogs</h2>
-        {/* <h2>Login</h2> */}
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
           <div>
             <label>username</label>
             <input
-              type="text"
               value={username}
               onChange={({ target }) => setUsername(target.value)}
             />
@@ -118,44 +135,12 @@ const App = () => {
     );
   }
 
-  const handleLike = async (blog) => {
-    console.log("Blog before update:", blog);
-    try {
-      const updatedBlog = { ...blog, likes: blog.likes + 1 };
-      const returnedBlog = await blogService.update(blog.id, updatedBlog);
-      console.log("Returned from backend:", returnedBlog); // Step 2: see what we got back
-
-      setBlogs(blogs.map((b) => (b.id === blog.id ? returnedBlog : b)));
-      setExpandedBlogId(blog.id);
-    } catch (error) {
-      console.log("Error updating likes", error);
-      showNotifications("Failed to update likes", "error");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    console.log("handle delete starts");
-    const blogToDelete = blogs.find((b) => b.id === id);
-    if (
-      !window.confirm(`Delete ${blogToDelete.title} by ${blogToDelete.author}`)
-    )
-      return;
-    try {
-      await blogService.remove(id);
-      setBlogs(blogs.filter((b) => b.id !== id));
-      showNotifications(`Deleted "${blogToDelete.title}"`);
-    } catch (error) {
-      console.log("Error deleting blog", error);
-      showNotifications("Failed to delete", "error");
-    }
-  };
-
   return (
     <div>
       <Notification message={notification.message} type={notification.type} />
 
       {blogs
-        .sort((a, b) => b.likes - a.likes) //works for arrays b-a (descending order), a-b (ascending order)
+        .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
             key={blog.id}
@@ -171,20 +156,20 @@ const App = () => {
         ))}
 
       <p>
-        logged in <button onClick={handleLogout}>logout</button>
+        logged in as {user.username}{" "}
+        <button onClick={handleLogout}>logout</button>
       </p>
-      <div>
-        <h2>Create New Blog</h2>
-        <BlogForm
-          addBlog={addBlog}
-          newTitle={newTitle}
-          setNewTitle={setNewTitle}
-          newAuthor={newAuthor}
-          setNewAuthor={setNewAuthor}
-          newUrl={newUrl}
-          setNewUrl={setNewUrl}
-        />
-      </div>
+
+      <h2>Create New Blog</h2>
+      <BlogForm
+        addBlog={addBlog}
+        newTitle={newTitle}
+        setNewTitle={setNewTitle}
+        newAuthor={newAuthor}
+        setNewAuthor={setNewAuthor}
+        newUrl={newUrl}
+        setNewUrl={setNewUrl}
+      />
     </div>
   );
 };
