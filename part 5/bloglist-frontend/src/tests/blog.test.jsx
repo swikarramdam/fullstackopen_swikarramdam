@@ -23,6 +23,34 @@ describe("<Blog />", () => {
     expect(screen.queryByText("10 likes")).toBeNull();
   });
 
+  test("shows blog URL and likes when the show button is clicked", async () => {
+    const toggleExpanded = vi.fn(); // We'll track clicks
+    const expanded = false; // Initially collapsed
+
+    render(
+      <Blog blog={blog} expanded={expanded} toggleExpanded={toggleExpanded} />
+    );
+
+    // URL and likes should NOT be visible by default
+    expect(screen.queryByText(blog.url)).toBeNull();
+    expect(screen.queryByText(`${blog.likes} likes`)).toBeNull();
+
+    // Click the 'show' button
+    const showButton = screen.getByText("show");
+    await userEvent.click(showButton);
+
+    // After clicking, toggleExpanded should have been called once
+    expect(toggleExpanded).toHaveBeenCalledTimes(1);
+
+    // To test actual rendering after state change, you'd need to render with expanded=true
+    render(
+      <Blog blog={blog} expanded={true} toggleExpanded={toggleExpanded} />
+    );
+
+    expect(screen.getByText(blog.url)).toBeDefined();
+    expect(screen.getByText(`${blog.likes} likes`)).toBeDefined();
+  });
+
   test("if like button is clicked twice, event handler is called twice", async () => {
     const mockHandler = vi.fn();
     render(<Blog blog={blog} handleLike={mockHandler} expanded={true} />);
