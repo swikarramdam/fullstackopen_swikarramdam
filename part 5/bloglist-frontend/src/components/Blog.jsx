@@ -10,7 +10,8 @@ const Blog = ({
   <div
     style={{ border: "1px solid #ca3d3dff", padding: "10px", marginTop: "8px" }}
   >
-    {blog.title} {blog.author}
+    <span>{blog.title}</span>
+    <span>{blog.author}</span>
     <button onClick={toggleExpanded}>{expanded ? "hide" : "show"}</button>
     {expanded && (
       <div>
