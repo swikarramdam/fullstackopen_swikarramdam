@@ -8,6 +8,8 @@ const Blog = ({
   handleDelete,
 }) => (
   <div
+    className="blog"
+    data-testid={`blog-${blog.id}`}
     style={{ border: "1px solid #ca3d3dff", padding: "10px", marginTop: "8px" }}
   >
     <span>{blog.title}</span>
