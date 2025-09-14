@@ -45,29 +45,54 @@ const updateBlog = async (req, res) => {
     if (!updatedBlog) {
       return res.status(404).json({ error: "Blog not found" });
     }
-    res.json(updateBlog);
+    res.json(updatedBlog);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 const deleteBlog = async (req, res) => {
   const { id } = req.params;
+  console.log("Request user:", req.user);
   try {
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id).populate("user");
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
     }
-    if (!blog.user || blog.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ error: "Unauthorised" }); //401 = unauthorised
-    }
-    await Blog.findByIdAndDelete(id); //Blog B, mongoose model convention , blog b, an instance of new Blog
 
+    console.log("Found blog:", blog);
+    console.log("Blog user type:", typeof blog.user);
+    console.log("Blog user:", blog.user);
+    console.log("Req user type:", typeof req.user._id);
+    console.log("Req user:", req.user._id);
+
+    // Ensure we're comparing strings
+    const blogUserId = blog.user._id
+      ? blog.user._id.toString()
+      : blog.user.toString();
+    const requestUserId = req.user._id.toString();
+
+    console.log("Comparing IDs:");
+    console.log("Blog user ID:", blogUserId);
+    console.log("Request user ID:", requestUserId);
+    console.log("Are IDs equal?", blogUserId === requestUserId);
+
+    if (blogUserId !== requestUserId) {
+      return res.status(401).json({
+        error: "Unauthorized",
+        blogUserId: blogUserId,
+        requestUserId: requestUserId,
+      });
+    }
+
+    await Blog.findByIdAndDelete(id);
     req.user.blogs = req.user.blogs.filter((b) => b.toString() !== id);
     await req.user.save();
 
     res.status(204).end();
   } catch (error) {
+    console.error("Delete error:", error);
     res.status(400).json({ error: error.message });
   }
 };
+
 module.exports = { getAllBlogs, createBlog, updateBlog, deleteBlog };
