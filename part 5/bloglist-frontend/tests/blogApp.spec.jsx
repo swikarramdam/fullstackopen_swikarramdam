@@ -211,7 +211,7 @@ test.describe("Blog app", () => {
       await page.getByLabel("url").fill("http://deleteurl.com");
       await page.getByRole("button", { name: /^create$/i }).click();
 
-      // grab the last blog (newly created)
+      // grab the last blog (just created)
       const blog = page.locator("div[data-testid^='blog-']").last();
 
       // expand and delete
