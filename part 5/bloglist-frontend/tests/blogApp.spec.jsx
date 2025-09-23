@@ -149,7 +149,7 @@ test.describe("Blog app", () => {
     });
   });
 
-  // 5.19–5.21: Blog operations (create, like, delete)
+  // 5.19–5.23: Blog operations (create, like, delete)
   test.describe("When logged in", () => {
     test.beforeEach(async ({ page }) => {
       await page.getByLabel("username").fill("mynewuser");
@@ -220,6 +220,95 @@ test.describe("Blog app", () => {
 
       // check that the title is gone from page
       await expect(page.getByText(uniqueTitle)).not.toBeVisible();
+    });
+
+    //5.22
+    test.describe("Blog Remove Button Visibility", () => {
+      test("only the creator sees the remove button", async ({ page }) => {
+        const uniqueTitle = `Auth Test Blog ${Date.now()}`;
+
+        // Login as creator
+        await page.goto("http://localhost:5173/");
+        await page.getByLabel("username").fill("mynewuser");
+        await page.getByLabel("password").fill("mypassword123");
+        await page.getByRole("button", { name: /login/i }).click();
+
+        // Create a blog
+        await page.getByRole("button", { name: /create new blog/i }).click();
+        await page.getByLabel("title").fill(uniqueTitle);
+        await page.getByLabel("author").fill("Swikar Don");
+        await page.getByLabel("url").fill("https://creator.com");
+        await page.getByRole("button", { name: /^create$/i }).click();
+
+        // Ensure blog is visible for creator
+        const blogItem = page
+          .getByTestId(/blog-/)
+          .filter({ hasText: uniqueTitle })
+          .first();
+        await blogItem.getByRole("button", { name: /show/i }).click();
+        await expect(
+          blogItem.getByRole("button", { name: /(delete|remove)/i })
+        ).toBeVisible();
+
+        // Logout
+        await page.getByRole("button", { name: /logout/i }).click();
+
+        // Login as another user
+        await page.getByLabel("username").fill("swikarrr");
+        await page.getByLabel("password").fill("swikarrr");
+        await page.getByRole("button", { name: /login/i }).click();
+
+        // 🔑 Force reload to fetch blogs for new user
+        await page.reload();
+
+        // Wait until the blog shows up in the list
+        await expect(page.getByText(uniqueTitle)).toBeVisible({
+          timeout: 10000,
+        });
+
+        // Expand blog as other user
+        const blogItemOther = page
+          .getByTestId(/blog-/)
+          .filter({ hasText: uniqueTitle })
+          .first();
+        await blogItemOther.getByRole("button", { name: /show/i }).click();
+
+        // Assert that delete/remove button is NOT visible
+        await expect(
+          blogItemOther.getByRole("button", { name: /(delete|remove)/i })
+        ).not.toBeVisible();
+      });
+    });
+
+    //5.23
+    test.describe("Blog Sorting by Likes", () => {
+      test("blogs are displayed in descending order of likes", async ({
+        page,
+      }) => {
+        await page.goto("http://localhost:5173/");
+        await page.getByLabel("username").fill("swikarrr");
+        await page.getByLabel("password").fill("swikarrr");
+        await page.getByRole("button", { name: /login/i }).click();
+
+        const blogs = page.getByTestId(/blog-/);
+
+        // Helper to get likes from a blog
+        const getLikes = async (blog) => {
+          await blog.getByRole("button", { name: /show/i }).click();
+          const likesText = await blog.getByText(/\d+ likes/).textContent();
+          return parseInt(likesText);
+        };
+
+        const blogCount = await blogs.count();
+        let prevLikes = Infinity;
+
+        for (let i = 0; i < blogCount; i++) {
+          const blog = blogs.nth(i);
+          const likes = await getLikes(blog);
+          expect(likes).toBeLessThanOrEqual(prevLikes);
+          prevLikes = likes;
+        }
+      });
     });
   });
 });
