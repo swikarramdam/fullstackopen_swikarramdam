@@ -117,19 +117,22 @@ const CreateNew = (props) => {
         <div>
           content
           <input
-            // name="content"
-            // value={content}
-            // onChange={(e) => setContent(e.target.value)}
-            {...content}
+            type={content.type}
+            value={content.value}
+            onChange={content.onChange}
           />
         </div>
         <div>
           author
-          <input {...author} />
+          <input
+            type={author.type}
+            value={author.value}
+            onChange={author.onChange}
+          />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input type={info.type} value={info.value} onChange={info.onChange} />
         </div>
         <button type="button" onClick={resetFields}>
           reset
