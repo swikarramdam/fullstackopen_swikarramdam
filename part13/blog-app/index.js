@@ -3,12 +3,12 @@ const app = express();
 const { sequelize } = require("./util/db");
 const { PORT } = require("./util/config");
 const { connecttoDatabase } = require("./util/db");
-
+const errorHandler = require("./middleware/errorhandler");
 app.use(express.json());
 
 const blogsRouter = require("./controller/blogs");
 app.use("/api/blogs", blogsRouter);
-
+app.use(errorHandler);
 const start = async () => {
   await connecttoDatabase();
   await sequelize.sync();
