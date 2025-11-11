@@ -38,18 +38,28 @@ router.get("/", userExtractor, async (req, res, next) => {
 });
 
 // Add blog to reading list
-router.post("/", userExtractor, async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   try {
-    const { blogId } = req.body;
+    const { blogId, userId } = req.body;
 
     if (!blogId) {
       return res.status(400).json({ error: "blogId is required" });
+    }
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
     }
 
     // Check if blog exists
     const blog = await Blog.findByPk(blogId);
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
+    }
+
+    // Check if user exists
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Check if already in reading list
@@ -59,7 +69,7 @@ router.post("/", userExtractor, async (req, res, next) => {
       WHERE user_id = :userId AND blog_id = :blogId
     `,
       {
-        replacements: { userId: req.user.id, blogId },
+        replacements: { userId, blogId },
         type: sequelize.QueryTypes.SELECT,
       }
     );
@@ -69,32 +79,18 @@ router.post("/", userExtractor, async (req, res, next) => {
     }
 
     // Add to reading list directly in database
-    const [result] = await sequelize.query(
+    await sequelize.query(
       `
       INSERT INTO reading_lists (user_id, blog_id, read, created_at, updated_at)
       VALUES (:userId, :blogId, false, NOW(), NOW())
-      RETURNING id, read
     `,
       {
-        replacements: { userId: req.user.id, blogId },
-        type: sequelize.QueryTypes.SELECT,
+        replacements: { userId, blogId },
+        type: sequelize.QueryTypes.INSERT,
       }
     );
 
-    // Get the blog with user info
-    const blogWithUser = await Blog.findByPk(blogId, {
-      attributes: { exclude: ["userId"] },
-      include: {
-        model: User,
-        attributes: ["name", "username"],
-      },
-    });
-
-    res.status(201).json({
-      ...blogWithUser.toJSON(),
-      readingListId: result.id,
-      read: result.read,
-    });
+    res.status(201).json({ message: "Blog added to reading list" });
   } catch (err) {
     next(err);
   }
