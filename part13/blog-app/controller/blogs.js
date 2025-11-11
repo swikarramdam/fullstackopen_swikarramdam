@@ -1,10 +1,16 @@
 const router = require("express").Router();
 const userExtractor = require("../middleware/userExtractor");
-const { Blog } = require("../models");
+const { Blog, User } = require("../models");
 
 router.get("/", async (req, res, next) => {
   try {
-    const blogs = await Blog.findAll();
+    const blogs = await Blog.findAll({
+      attributes: { exclude: ["userId"] },
+      include: {
+        model: User,
+        attributes: ["name", "username"],
+      },
+    });
     res.json(blogs);
   } catch (err) {
     next(err);
@@ -17,7 +23,14 @@ router.post("/", userExtractor, async (req, res, next) => {
       ...req.body,
       userId: req.user.id,
     });
-    res.status(201).json(blog);
+    const blogWithUser = await Blog.findByPk(blog.id, {
+      attributes: { exclude: ["userId"] },
+      include: {
+        model: User,
+        attributes: ["name", "username"],
+      },
+    });
+    res.status(201).json(blogWithUser);
   } catch (err) {
     next(err);
   }
@@ -43,7 +56,13 @@ router.delete("/:id", userExtractor, async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    const blog = await Blog.findByPk(req.params.id);
+    const blog = await Blog.findByPk(req.params.id, {
+      attributes: { exclude: ["userId"] },
+      include: {
+        model: User,
+        attributes: ["name", "username"],
+      },
+    });
     if (!blog) {
       throw new Error("Blog not found"); // ✅ thrown -> middleware catches
     }
