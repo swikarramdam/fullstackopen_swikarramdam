@@ -23,11 +23,16 @@ router.post("/", userExtractor, async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", userExtractor, async (req, res, next) => {
   try {
     const blog = await Blog.findByPk(req.params.id);
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
+    }
+    if (blog.userId !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: "Only the creator can delete this blog" });
     }
     await blog.destroy();
     res.status(204).end();
