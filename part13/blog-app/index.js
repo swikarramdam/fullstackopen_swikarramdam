@@ -44,7 +44,6 @@ app.get("/api/authors", async (req, res, next) => {
 app.use(errorHandler);
 const start = async () => {
   await connecttoDatabase();
-  await sequelize.sync({ alter: true });
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
