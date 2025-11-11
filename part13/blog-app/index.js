@@ -11,9 +11,11 @@ const blogsRouter = require("./controller/blogs");
 const usersRouter = require("./controller/users");
 const loginRouter = require("./controller/login");
 const readingListRouter = require("./controller/readinglist");
+const logoutRouter = require("./controller/logout");
 app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
+app.use("/api/logout", logoutRouter);
 app.use("/api/readinglists", readingListRouter);
 
 // Authors route

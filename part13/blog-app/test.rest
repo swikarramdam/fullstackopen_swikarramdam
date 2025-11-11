@@ -78,9 +78,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc
   "url": "https://example.com"
 }
 
+### Get blog with user authentication
+GET  http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU3MzEyLCJleHAiOjE3NjI4NjA5MTJ9.npKtPAtReuUyJmHyM0iKxzeJGA4BfyFsdTnq-Q4vZgI
+
+
 ### Delete a blog with user authentication
 DELETE http://localhost:3001/api/blogs/13
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAZ21haWwuY29tIiwiaWQiOjMsImlhdCI6MTc2Mjg0MzAwMywiZXhwIjoxNzYyODQ2NjAzfQ.Iq9rJNl6IRWVnEcrwKkEaJIO45PuQdaXfmVXpzIOYyA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU3MzEyLCJleHAiOjE3NjI4NjA5MTJ9.npKtPAtReuUyJmHyM0iKxzeJGA4BfyFsdTnq-Q4vZgI
 
 ### Create a blog with year
 POST http://localhost:3001/api/blogs
@@ -191,3 +197,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc
 ### Get only unread blogs
 GET http://localhost:3001/api/users/3?read=false
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE 
+
+### logout delete session
+DELETE http://localhost:3001/api/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU3Njc0LCJleHAiOjE3NjI4NjEyNzR9.tMU8fcxlw3YD7mpBS44SD5aj9nkGKAo8JHFlKQZ0uoY
