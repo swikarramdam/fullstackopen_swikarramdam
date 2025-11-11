@@ -24,6 +24,17 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // Build WHERE clause based on query parameter
+    let whereClause = "WHERE rl.user_id = :userId";
+    const replacements = { userId: id };
+
+    // Filter by read status if query parameter is provided
+    if (req.query.read !== undefined) {
+      const readValue = req.query.read === "true";
+      whereClause += " AND rl.read = :readValue";
+      replacements.readValue = readValue;
+    }
+
     // Get user's reading list from database with reading_lists table info
     const readings = await sequelize.query(
       `
@@ -38,11 +49,11 @@ router.get("/:id", async (req, res) => {
         rl.read as readinglist_read
       FROM reading_lists rl
       JOIN blogs b ON rl.blog_id = b.id
-      WHERE rl.user_id = :userId
+      ${whereClause}
       ORDER BY rl.created_at DESC
     `,
       {
-        replacements: { userId: id },
+        replacements,
         type: sequelize.QueryTypes.SELECT,
       }
     );

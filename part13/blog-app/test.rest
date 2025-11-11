@@ -179,3 +179,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc
 {
   "read": false
 }
+
+### Get all blogs
+GET http://localhost:3001/api/users/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE
+
+### Get only read blogs
+GET http://localhost:3001/api/users/3?read=true
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE
+
+### Get only unread blogs
+GET http://localhost:3001/api/users/3?read=false
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE 
