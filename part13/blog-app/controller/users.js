@@ -24,7 +24,7 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Get user's reading list from database
+    // Get user's reading list from database with reading_lists table info
     const readings = await sequelize.query(
       `
       SELECT 
@@ -33,7 +33,9 @@ router.get("/:id", async (req, res) => {
         b.title,
         b.author,
         b.likes,
-        b.year
+        b.year,
+        rl.id as readinglist_id,
+        rl.read as readinglist_read
       FROM reading_lists rl
       JOIN blogs b ON rl.blog_id = b.id
       WHERE rl.user_id = :userId
@@ -45,10 +47,26 @@ router.get("/:id", async (req, res) => {
       }
     );
 
+    // Format the response to match the required structure
+    const formattedReadings = readings.map((reading) => ({
+      id: reading.id,
+      url: reading.url,
+      title: reading.title,
+      author: reading.author,
+      likes: reading.likes,
+      year: reading.year,
+      readinglists: [
+        {
+          read: reading.readinglist_read,
+          id: reading.readinglist_id,
+        },
+      ],
+    }));
+
     res.json({
       name: user.name,
       username: user.username,
-      readings: readings,
+      readings: formattedReadings,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

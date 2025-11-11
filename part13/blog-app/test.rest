@@ -165,4 +165,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc
 }
 
 ### Get the users
-GET http://localhost:3001/api/users
+GET http://localhost:3001/api/users/4
