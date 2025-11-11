@@ -1,0 +1,203 @@
+### GET all blogs
+GET http://localhost:3001/api/blogs
+Accept: application/json
+
+
+### POST a new blog
+
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "author": "Swikar",
+  "title": "My First API Blog",
+  "url": "https://example.com",
+  "likes": 10
+}
+
+### Delete a blog
+
+DELETE  http://localhost:3001/api/blogs/3
+
+
+### Create a new user
+
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "username": "new one to test",
+  "name": "Test User"
+}
+
+### Get all users
+
+GET http://localhost:3001/api/users
+Accept: application/json
+
+### Get a user by username
+
+GET http://localhost:3001/api/users/testuser
+Accept: application/json
+
+### Update a user
+
+PUT http://localhost:3001/api/users/testuser
+Content-Type: application/json
+
+{
+  "name": "Updated Test User again"
+}
+
+### Create new user with password
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "username": "test55@gmail.com",
+  "name": "Test User",
+  "password": "password"
+}
+
+### User login
+POST http://localhost:3001/api/login
+Content-Type: application/json
+
+{
+  "username": "test55@gmail.com",
+  "password": "password"
+}
+
+### Create a blog with user authentication
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAZ21haWwuY29tIiwiaWQiOjMsImlhdCI6MTc2Mjg0MzAwMywiZXhwIjoxNzYyODQ2NjAzfQ.Iq9rJNl6IRWVnEcrwKkEaJIO45PuQdaXfmVXpzIOYyA
+
+{
+  "title": "Test Blog",
+  "url": "https://example.com"
+}
+
+### Get blog with user authentication
+GET  http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU3MzEyLCJleHAiOjE3NjI4NjA5MTJ9.npKtPAtReuUyJmHyM0iKxzeJGA4BfyFsdTnq-Q4vZgI
+
+
+### Delete a blog with user authentication
+DELETE http://localhost:3001/api/blogs/13
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU3MzEyLCJleHAiOjE3NjI4NjA5MTJ9.npKtPAtReuUyJmHyM0iKxzeJGA4BfyFsdTnq-Q4vZgI
+
+### Create a blog with year
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q0NUBnbWFpbC5jb20iLCJpZCI6MywiaWF0IjoxNzYyODQ4NDc0LCJleHAiOjE3NjI4NTIwNzR9.5ZZpDmHHeGeOGThot4E7dVkmN8F2raHkewmwiFqDCqM
+
+{
+  "title": "Test Blog",
+  "url": "https://example.com",
+  "year": 1990
+}
+
+### Create Blog 2 - React Tutorial
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODUzOTc4LCJleHAiOjE3NjI4NTc1Nzh9.vyB2OcZaaGkfXTW-GygRP0463sD3mA80ye8sMeY4suI
+
+{
+  "title": "React Tutorial 2",
+  "url": "https://react.dev",
+  "author": "Dhan tadann",
+  "likes": 50,
+  "year": 2023
+}
+
+### Create Blog 3 - Clean Code
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODUzOTc4LCJleHAiOjE3NjI4NTc1Nzh9.vyB2OcZaaGkfXTW-GygRP0463sD3mA80ye8sMeY4suI
+
+{
+  "title": "Clean Code",
+  "url": "https://cleancode.com",
+  "author": "Robert C. Martin",
+  "likes": 25,
+  "year": 2022
+}
+
+### Create Blog 4 - JavaScript Basics
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODUzOTc4LCJleHAiOjE3NjI4NTc1Nzh9.vyB2OcZaaGkfXTW-GygRP0463sD3mA80ye8sMeY4suI
+
+{
+  "title": "JavaScript Basics",
+  "url": "https://javascript.info",
+  "author": "Ilya Kantor",
+  "likes": 100,
+  "year": 2024
+}
+
+### Adding a blog to the reading list
+POST http://localhost:3001/api/readinglists
+Content-Type: application/json
+
+{
+  "blogId": 2,
+  "userId": 3
+}
+
+### Get the reading list
+GET http://localhost:3001/api/readinglist
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q0NUBnbWFpbC5jb20iLCJpZCI6MywiaWF0IjoxNzYyODQ4NDc0LCJleHAiOjE3NjI4NTIwNzR9.5ZZpDmHHeGeOGThot4E7dVkmN8F2raHkewmwiFqDCqM
+
+### Mark a blog as read in the reading list
+PUT http://localhost:3001/api/readinglist/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q0NUBnbWFpbC5jb20iLCJpZCI6MywiaWF0IjoxNzYyODQ4NDc0LCJleHAiOjE3NjI4NTIwNzR9.5ZZpDmHHeGeOGThot4E7dVkmN8F2raHkewmwiFqDCqM
+
+{
+  "read": true
+}
+
+### Adding a blog to the readinglists
+POST http://localhost:3001/api/readinglists
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODUzOTc4LCJleHAiOjE3NjI4NTc1Nzh9.vyB2OcZaaGkfXTW-GygRP0463sD3mA80ye8sMeY4suI
+
+{
+  "blogId": 3,
+  "userId": 4
+}
+
+### Get the users
+GET http://localhost:3001/api/users/4
+
+### Get the reading list of the user
+GET http://localhost:3001/api/readinglists
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE
+
+### Mark a blog as read in the reading list
+PUT http://localhost:3001/api/readinglists/4
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE
+
+{
+  "read": false
+}
+
+### Get all blogs
+GET http://localhost:3001/api/users/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE
+
+### Get only read blogs
+GET http://localhost:3001/api/users/3?read=true
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE
+
+### Get only unread blogs
+GET http://localhost:3001/api/users/3?read=false
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU1NjAwLCJleHAiOjE3NjI4NTkyMDB9.x3hvm9tl4wKhrIAaf4ykkNPrruZswdzFG7EWyhumTeE 
+
+### logout delete session
+DELETE http://localhost:3001/api/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Q1NUBnbWFpbC5jb20iLCJpZCI6NCwiaWF0IjoxNzYyODU3Njc0LCJleHAiOjE3NjI4NjEyNzR9.tMU8fcxlw3YD7mpBS44SD5aj9nkGKAo8JHFlKQZ0uoY

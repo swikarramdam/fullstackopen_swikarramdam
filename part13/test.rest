@@ -1,0 +1,20 @@
+### GET all blogs
+GET http://localhost:3001/api/blogs
+Accept: application/json
+
+
+### POST a new blog
+
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "author": "Swikar",
+  "title": "My First API Blog",
+  "url": "https://example.com",
+  "likes": 10
+}
+
+### Delete a blog
+
+DELETE  http://localhost:3001/api/blogs/3
