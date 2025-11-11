@@ -1,5 +1,6 @@
 const router = require("express").Router();
-const Blog = require("../models/blog");
+const userExtractor = require("../middleware/userExtractor");
+const { Blog } = require("../models");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -10,9 +11,12 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", userExtractor, async (req, res, next) => {
   try {
-    const blog = await Blog.create(req.body);
+    const blog = await Blog.create({
+      ...req.body,
+      userId: req.user.id,
+    });
     res.status(201).json(blog);
   } catch (err) {
     next(err);
